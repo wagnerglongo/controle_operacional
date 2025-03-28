@@ -1,0 +1,371 @@
+*{
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 8px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.credor-container {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 24.5%;
+    margin-bottom: 16px;
+}
+
+.credor-container h3 {
+    text-align: center;
+    color: #333;
+}
+
+.user-list {
+    margin-top: 10px;
+}
+
+.user-list .user-item {
+    background-color: #e9ecef;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-list .user-item button {
+    margin-left: 10px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#view-inactives {
+    margin-top: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-container {
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.form-container h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-container input, 
+.form-container select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background-color: #218838;
+}
+
+
+/* Estilos para o formulário de edição */
+#edit-form-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    width: 450px;
+}
+
+#edit-form-container h3 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Estilo para os inputs e selects */
+#edit-form input, #edit-form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Botões de ação */
+#edit-form-container button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#edit-form-container button.save-btn {
+    background-color: #28a745;
+    color: white;
+    margin-bottom: 10px;
+}
+
+#edit-form-container button.save-btn:hover {
+    background-color: #218838;
+}
+
+#edit-form-container button.close-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+#edit-form-container button.close-btn:hover {
+    background-color: #c82333;
+}
+
+/* Estilo para o fundo escurecido */
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+/* Estilo do modal para inativos */
+#inactive-users-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    width: 450px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#inactive-users-container h3 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+    font-family: 'Arial', sans-serif;
+}
+
+#inactive-users-container .user-item {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+
+/* Botões */
+#inactive-users-container button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#inactive-users-container button.close-btn {
+    background-color: #dc3545;
+    color: white;
+    margin-top: 20px;
+}
+
+#inactive-users-container button.close-btn:hover {
+    background-color: #c82333;
+}
+
+/* Overlay para o fundo escurecido */
+#inactive-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+
+/* Estilo para o botão "+" */
+.toggle-options {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    text-align: center;
+    line-height: 20px;
+}
+
+.toggle-options:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos para os botões "Editar" e "Inativar", inicialmente escondidos */
+.user-options {
+    display: none;
+    margin-top: 10px;
+    justify-content: space-around;
+}
+
+.user-options button {
+    width: 45%;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.user-options button.edit-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.user-options button.edit-btn:hover {
+    background-color: #218838;
+}
+
+.user-options button.inactivate-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.user-options button.inactivate-btn:hover {
+    background-color: #c82333;
+}
+
+
+
+
+
+/* Estilos para o ícone de menu */
+.menu-icon {
+    font-size: 30px;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+/* Estilos para o menu lateral */
+.side-menu {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #ffffff;
+    overflow-x: hidden;
+    transition: width 0.5s;
+    padding-top: 60px;
+    z-index: 1100;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+/* Estilos dos links do menu */
+.side-menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: black;
+    display: block;
+    transition: background-color 0.3s;
+    flex-wrap: nowrap;
+    min-width: 218px;
+}
+
+/* Mudar a cor do link quando o mouse passar por cima */
+.side-menu a:hover {
+    background-color: #68d4ff;
+    color: white;
+}
+
+/* Estilos para o botão de fechar */
+.close-btn2 {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 30px;
+    background: none;
+    border: none;
+    color: black;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+}
+.close-btn2:hover{
+    color: #000000bd;
+    background-color: #ffffff;
+}
+
+/* Quando o menu está aberto */
+.side-menu.open {
+    width: 250px;
+    border-left: #68d4ff 2px solid;
+}
