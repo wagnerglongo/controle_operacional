@@ -13,18 +13,27 @@ if ($conn->connect_error) {
 }
 
 // Verificar se os dados necessários foram recebidos via POST
-if (isset($_POST['id']) && isset($_POST['nome']) && isset($_POST['status']) && isset($_POST['metas']) && isset($_POST['credor']) && isset($_POST['over'])) {
+if (isset($_POST['id']) && isset($_POST['nome']) && isset($_POST['status']) && isset($_POST['metas']) && isset($_POST['credor']) && isset($_POST['dt_entrada'])) {
     // Sanitizar os dados recebidos
     $id = $conn->real_escape_string($_POST['id']);
     $nome = $conn->real_escape_string($_POST['nome']);
     $status = $conn->real_escape_string($_POST['status']);
     $metas = $conn->real_escape_string($_POST['metas']);
     $credor = $conn->real_escape_string($_POST['credor']);
-    $over = $conn->real_escape_string($_POST['over']);
+    $dt_entrada_input = $_POST['dt_entrada'];
+
+    // Formatar a data para garantir o padrão "YYYY-MM-DD"
+    $date = DateTime::createFromFormat('Y-m-d', $dt_entrada_input);
+    if ($date) {
+        $dt_entrada = $date->format('Y-m-d');
+    } else {
+        echo json_encode(array("success" => false, "message" => "Data de entrada inválida."));
+        exit;
+    }
     
     // Atualizar os dados do usuário no banco de dados
     $sql = "UPDATE user_ativo 
-            SET nome='$nome', status='$status', metas='$metas', credor='$credor', `over`='$over'
+            SET nome='$nome', status='$status', metas='$metas', credor='$credor', dt_entrada='$dt_entrada'
             WHERE id='$id'";
     
     // Executar a consulta de atualização

@@ -33,9 +33,10 @@ if ($result->num_rows > 0) {
             'nome' => $row['nome'],
             'status' => $row['status'],
             'metas' => $row['metas'],
-            'credor' => $row['credor'],  // Adiciona o credor
-            'over' => $row['over'],      // Adiciona o over
-            'container' => $container    // Define o container correto
+            'credor' => $row['credor'],  
+            'dt_entrada' => $row['dt_entrada'],  
+            'over' => $row['over'],      
+            'container' => $container    
         ];
     }
 }

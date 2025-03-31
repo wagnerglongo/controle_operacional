@@ -52,30 +52,32 @@ function loadUsers() {
                     userItem.classList.add('list-group-item', 'mb-2'); // List Group item
 
                     // Monta o credorOver
-                    const credorOver = (user.over === 0) ? user.credor : `${user.credor}-${user.over}`;
+                    const credorOver = (user.over === 0) ? user.credor : `${user.credor}-${user.dt_entrada}`;
 
                     // Insere conteúdo já com classes Bootstrap
                     userItem.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>${user.nome}</strong>
-                                <small class="text-muted">(${user.status})</small>
-                                <span class="text-muted"> - R$${user.metas}</span>
-                            </div>
-                            <div class="btn-group">
-                                <button 
-                                    class="btn btn-sm btn-primary" 
-                                    onclick="editUser(${user.id}, '${user.nome}', '${user.status}', '${user.metas}', '${credorOver}')">
-                                    Editar
-                                </button>
-                                <button 
-                                    class="btn btn-sm btn-danger" 
-                                    onclick="inactivateUser(${user.id})">
-                                    Inativar
-                                </button>
-                            </div>
-                        </div>
-                    `;
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <strong>${user.nome}</strong>
+        <small class="text-muted">(${user.status})</small>
+        <span class="text-muted"> - R$${user.metas}</span>
+        <span class="text-muted"> - ${user.dt_entrada}</span>
+    </div>
+    <div class="btn-group">
+        <button 
+            class="btn btn-sm btn-primary" 
+            onclick="editUser(${user.id}, '${user.nome}', '${user.status}', '${user.metas}', '${user.dt_entrada}', '${user.credor}', '${user.over}')">
+            Editar
+        </button>
+        <button 
+            class="btn btn-sm btn-danger" 
+            onclick="inactivateUser(${user.id})">
+            Inativar
+        </button>
+    </div>
+</div>
+`;
+
 
                     container.appendChild(userItem);
                 }
@@ -102,33 +104,25 @@ function toggleOptions(userId) {
 
 
 // Função para editar um usuário
-function editUser(id, nome, status, metas, credorOver) {
-    console.log("Editando usuário:", id, nome, status, metas, credorOver);
+function editUser(id, nome, status, metas, dt_entrada, credor, over) {
+    console.log("Editando usuário:", id, nome, status, metas, dt_entrada, credor, over);
     document.getElementById('edit-id').value = id;
     document.getElementById('edit-nome').value = nome;
     document.getElementById('edit-status').value = status;
     document.getElementById('edit-metas').value = metas;
+    document.getElementById('edit-dt_entrada').value = dt_entrada;
 
-    // Verifica se o valor de over foi passado ou se só há credor
-    if (credorOver.includes('-')) {
-        const [credor, over] = credorOver.split('-');
-        if (over === '0') {
-            // Se o valor de over for 0, use apenas o credor (casos como PagSeguro ou Ativos)
-            document.getElementById('edit-credor').value = credor;
-        } else {
-            // Caso contrário, use credor e over (casos como Crefisa ou Over)
-            document.getElementById('edit-credor').value = `${credor}-${over}`;
-        }
-        
+    // Monta o campo de credor de acordo com o valor de "over"
+    if (over && over !== "0") {
+        document.getElementById('edit-credor').value = `${credor}-${over}`;
     } else {
-        // Para casos onde só há credor (como Ativos ou PagSeguro)
-        document.getElementById('edit-credor').value = credorOver;
+        document.getElementById('edit-credor').value = credor;
     }
 
     const editModal = new bootstrap.Modal(document.getElementById('edit-form-container'));
     editModal.show();
-
 }
+
 
 
 
@@ -140,6 +134,7 @@ document.getElementById('edit-form').addEventListener('submit', function(e) {
     const nome = document.getElementById('edit-nome').value;
     const status = document.getElementById('edit-status').value;
     const metas = document.getElementById('edit-metas').value;
+    const dt_entrada = document.getElementById('edit-dt_entrada').value;
     
     // Pegando o valor do credor e separando o over, se houver
     const credorOver = document.getElementById('edit-credor').value.split('-');
@@ -147,14 +142,14 @@ document.getElementById('edit-form').addEventListener('submit', function(e) {
     const over = credorOver[1] || 0; // O segundo valor é o over, se houver
 
     // Verifique se os dados estão corretos
-    console.log("Dados enviados:", { id, nome, status, metas, credor, over });
+    console.log("Dados enviados:", { id, nome, status, metas, credor, over, dt_entrada });
 
     fetch('php/edit_user.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `id=${id}&nome=${nome}&status=${status}&metas=${metas}&credor=${credor}&over=${over}`
+        body: `id=${id}&nome=${nome}&status=${status}&metas=${metas}&credor=${credor}&dt_entrada=${dt_entrada}`
     })
     .then(response => response.json())
     .then(data => {

@@ -182,6 +182,10 @@ sqlsrv_close($conn);
                         <label for="edit-metas" class="form-label">Metas:</label>
                         <input type="text" id="edit-metas" name="metas" class="form-control" placeholder="Metas do usuário" required>
                     </div>
+                    <div class="mb-3">
+                    <label for="edit-dt_entrada" class="form-label">Data de entrada:</label>
+                    <input type="date" id="edit-dt_entrada" name="dt_entrada" class="form-control">
+                    </div>
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-success me-2">Salvar Alterações</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
