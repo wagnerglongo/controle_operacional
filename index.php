@@ -107,43 +107,58 @@ sqlsrv_close($conn);
         </div>
 
         <!-- Formulário de Cadastro de Usuários em um card -->
-        <div class="card mb-3">
-            <div class="card-header">
-                <h3 class="card-title">Cadastrar Novo Usuário</h3>
-            </div>
-            <div class="card-body">
-                <form id="register-form">
-                    <div class="mb-3">
-                        <label for="nome" class="form-label">Nome:</label>
-                        <select id="nome" name="nome" required>
-                            <?php echo $options; ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="credor" class="form-label">Credor:</label>
-                        <select id="credor" name="credor" class="form-select" required>
-                            <option value="5">Ativos</option>
-                            <option value="2-2">Crefisa</option>
-                            <option value="2-1">Over</option>
-                            <option value="1">PagBank</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Nível:</label>
-                        <select id="status" name="status" class="form-select" required>
-                            <option value="estagio">Estágio</option>
-                            <option value="junior">Júnior</option>
-                            <option value="senior">Sênior</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="metas" class="form-label">Metas:</label>
-                        <input type="text" id="metas" name="metas" class="form-control" placeholder="Defina metas para o usuário">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Cadastrar Usuário</button>
-                </form>
-            </div>
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3 class="card-title">Cadastrar Novo Usuário</h3>
         </div>
+        <div class="card-body">
+            <form id="register-form">
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome:</label>
+                    <select id="nome" name="nome" required>
+                        <?php echo $options; ?>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="credor" class="form-label">Credor:</label>
+                    <select id="credor" name="credor" class="form-select" required>
+                        <option value="5">Ativos</option>
+                        <option value="2-2">Crefisa</option>
+                        <option value="2-1">Over</option>
+                        <option value="1">PagBank</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="status" class="form-label">Nível:</label>
+                    <select id="status" name="status" class="form-select" required>
+                        <option value="estagio">Estágio</option>
+                        <option value="junior">Júnior</option>
+                        <option value="senior">Sênior</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="metas" class="form-label">Metas:</label>
+                    <input type="text" id="metas" name="metas" class="form-control" placeholder="Defina metas para o usuário">
+                </div>
+                <!-- Novo campo: Data de Entrada -->
+                <div class="mb-3">
+                    <label for="dt_entrada" class="form-label">Data de Entrada:</label>
+                    <input type="date" id="dt_entrada" name="dt_entrada" class="form-control">
+                </div>
+                <!-- Novo campo: Período -->
+                <div class="mb-3">
+                    <label for="periodo" class="form-label">Período:</label>
+                    <select id="periodo" name="periodo" class="form-select" required>
+                        <option value="">Selecione</option>
+                        <option value="manha">Manhã</option>
+                        <option value="tarde">Tarde</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Cadastrar Usuário</button>
+            </form>
+        </div>
+    </div>
+
     </div>
 
     <!-- Formulário de Edição utilizando Modal do Bootstrap -->
@@ -183,14 +198,23 @@ sqlsrv_close($conn);
                         <input type="text" id="edit-metas" name="metas" class="form-control" placeholder="Metas do usuário" required>
                     </div>
                     <div class="mb-3">
-                    <label for="edit-dt_entrada" class="form-label">Data de entrada:</label>
-                    <input type="date" id="edit-dt_entrada" name="dt_entrada" class="form-control">
+                        <label for="edit-dt_entrada" class="form-label">Data de entrada:</label>
+                        <input type="date" id="edit-dt_entrada" name="dt_entrada" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-periodo" class="form-label">Período:</label>
+                        <select id="edit-periodo" name="periodo" class="form-select" required>
+                            <option value="">Selecione</option>
+                            <option value="manha">Manhã</option>
+                            <option value="tarde">Tarde</option>
+                        </select>
                     </div>
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-success me-2">Salvar Alterações</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                     </div>
                 </form>
+
             </div>
          </div>
       </div>

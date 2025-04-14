@@ -66,7 +66,7 @@ function loadUsers() {
     <div class="btn-group">
         <button 
             class="btn btn-sm btn-primary" 
-            onclick="editUser(${user.id}, '${user.nome}', '${user.status}', '${user.metas}', '${user.dt_entrada}', '${user.credor}', '${user.over}')">
+             onclick="editUser(${user.id}, '${user.nome}', '${user.status}', '${user.metas}', '${user.dt_entrada}', '${user.credor}', '${user.over}', '${user.periodo}')">
             Editar
         </button>
         <button 
@@ -104,12 +104,13 @@ function toggleOptions(userId) {
 
 
 // Função para editar um usuário
-function editUser(id, nome, status, metas, dt_entrada, credor, over) {
-    console.log("Editando usuário:", id, nome, status, metas, dt_entrada, credor, over);
+function editUser(id, nome, status, metas, dt_entrada, credor, over, periodo) {
+    console.log("Editando usuário:", id, nome, status, metas, dt_entrada, credor, over, periodo);
     document.getElementById('edit-id').value = id;
     document.getElementById('edit-nome').value = nome;
     document.getElementById('edit-status').value = status;
     document.getElementById('edit-metas').value = metas;
+    document.getElementById('edit-periodo').value = periodo; // Atribuição do novo campo
     document.getElementById('edit-dt_entrada').value = dt_entrada;
 
     // Monta o campo de credor de acordo com o valor de "over"
@@ -126,6 +127,7 @@ function editUser(id, nome, status, metas, dt_entrada, credor, over) {
 
 
 
+
 // Submissão do formulário de edição
 document.getElementById('edit-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -135,21 +137,21 @@ document.getElementById('edit-form').addEventListener('submit', function(e) {
     const status = document.getElementById('edit-status').value;
     const metas = document.getElementById('edit-metas').value;
     const dt_entrada = document.getElementById('edit-dt_entrada').value;
-    
+    const periodo = document.getElementById('edit-periodo').value; // Novo campo
+
     // Pegando o valor do credor e separando o over, se houver
     const credorOver = document.getElementById('edit-credor').value.split('-');
-    const credor = credorOver[0]; // O primeiro valor é o credor
-    const over = credorOver[1] || 0; // O segundo valor é o over, se houver
+    const credor = credorOver[0]; // Primeiro valor é o credor
+    const over = credorOver[1] || 0; // Segundo valor é o over, se houver
 
-    // Verifique se os dados estão corretos
-    console.log("Dados enviados:", { id, nome, status, metas, credor, over, dt_entrada });
+    console.log("Dados enviados:", { id, nome, status, metas, credor, over, dt_entrada, periodo });
 
     fetch('php/edit_user.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `id=${id}&nome=${nome}&status=${status}&metas=${metas}&credor=${credor}&dt_entrada=${dt_entrada}`
+        body: `id=${id}&nome=${nome}&status=${status}&metas=${metas}&credor=${credor}&dt_entrada=${dt_entrada}&periodo=${periodo}`
     })
     .then(response => response.json())
     .then(data => {
@@ -166,6 +168,7 @@ document.getElementById('edit-form').addEventListener('submit', function(e) {
         console.error('Erro ao atualizar usuário:', error);
     });
 });
+
 
 
 

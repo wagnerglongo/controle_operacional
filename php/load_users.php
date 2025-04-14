@@ -35,9 +35,11 @@ if ($result->num_rows > 0) {
             'metas' => $row['metas'],
             'credor' => $row['credor'],  
             'dt_entrada' => $row['dt_entrada'],  
+            'periodo' => $row['periodo'],   // novo campo
             'over' => $row['over'],      
             'container' => $container    
         ];
+        
     }
 }
 

@@ -13,7 +13,7 @@ if ($conn->connect_error) {
 }
 
 // Verificar se os dados necessários foram recebidos via POST
-if (isset($_POST['id']) && isset($_POST['nome']) && isset($_POST['status']) && isset($_POST['metas']) && isset($_POST['credor']) && isset($_POST['dt_entrada'])) {
+if (isset($_POST['id']) && isset($_POST['nome']) && isset($_POST['status']) && isset($_POST['metas']) && isset($_POST['credor']) && isset($_POST['dt_entrada']) && isset($_POST['periodo'])) {
     // Sanitizar os dados recebidos
     $id = $conn->real_escape_string($_POST['id']);
     $nome = $conn->real_escape_string($_POST['nome']);
@@ -21,7 +21,8 @@ if (isset($_POST['id']) && isset($_POST['nome']) && isset($_POST['status']) && i
     $metas = $conn->real_escape_string($_POST['metas']);
     $credor = $conn->real_escape_string($_POST['credor']);
     $dt_entrada_input = $_POST['dt_entrada'];
-
+    $periodo = $conn->real_escape_string($_POST['periodo']);
+    
     // Formatar a data para garantir o padrão "YYYY-MM-DD"
     $date = DateTime::createFromFormat('Y-m-d', $dt_entrada_input);
     if ($date) {
@@ -31,9 +32,9 @@ if (isset($_POST['id']) && isset($_POST['nome']) && isset($_POST['status']) && i
         exit;
     }
     
-    // Atualizar os dados do usuário no banco de dados
+    // Atualizar os dados do usuário no banco de dados (incluindo o campo periodo)
     $sql = "UPDATE user_ativo 
-            SET nome='$nome', status='$status', metas='$metas', credor='$credor', dt_entrada='$dt_entrada'
+            SET nome='$nome', status='$status', metas='$metas', credor='$credor', dt_entrada='$dt_entrada', periodo='$periodo'
             WHERE id='$id'";
     
     // Executar a consulta de atualização
@@ -45,6 +46,7 @@ if (isset($_POST['id']) && isset($_POST['nome']) && isset($_POST['status']) && i
 } else {
     echo json_encode(array("success" => false, "message" => "Dados incompletos enviados."));
 }
+
 
 // Fechar a conexão com o banco de dados
 $conn->close();
