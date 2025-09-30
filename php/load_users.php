@@ -16,6 +16,9 @@ if ($result->num_rows > 0) {
         $container = '';
 
         switch ($row['credor']) {
+            case '6':  // Caso "Ativos"
+                $container = 'amc-credor-6';
+                break;
             case '5':  // Caso "Ativos"
                 $container = 'ativo-credor-5';
                 break;
