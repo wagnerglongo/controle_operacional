@@ -40,6 +40,7 @@ function loadUsers() {
     // Se você NÃO usa Over, remova essa linha ou adicione o container
     //document.getElementById("user-list-over-credor-2-over-1").innerHTML = '';
     document.getElementById("user-list-pagbank-credor-1").innerHTML = '';
+    document.getElementById("user-list-amc-credor-6").innerHTML = '';
 
     fetch('php/load_users.php')
         .then(response => response.json())
