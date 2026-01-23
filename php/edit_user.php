@@ -23,18 +23,29 @@ if (isset($_POST['id']) && isset($_POST['nome']) && isset($_POST['status']) && i
     $dt_entrada_input = $_POST['dt_entrada'];
     $periodo = $conn->real_escape_string($_POST['periodo']);
     
+    // Tratamento para o campo 'over'
+    // Se 'over' for enviado via POST, usa-o. Caso contrário, assume 0.
+    $over = isset($_POST['over']) ? $conn->real_escape_string($_POST['over']) : '0';
+
     // Formatar a data para garantir o padrão "YYYY-MM-DD"
     $date = DateTime::createFromFormat('Y-m-d', $dt_entrada_input);
     if ($date) {
         $dt_entrada = $date->format('Y-m-d');
     } else {
-        echo json_encode(array("success" => false, "message" => "Data de entrada inválida."));
-        exit;
+        // Se a data estiver vazia ou inválida, pode-se decidir salvar NULL ou manter a data antiga.
+        // Aqui, retornaremos erro se for obrigatória ou NULL se permitido.
+        // Assumindo que pode ser nullable se vazio, mas o código original retornava erro.
+        if (empty($dt_entrada_input)) {
+             $dt_entrada = NULL;
+        } else {
+             echo json_encode(array("success" => false, "message" => "Data de entrada inválida."));
+             exit;
+        }
     }
     
-    // Atualizar os dados do usuário no banco de dados (incluindo o campo periodo)
+    // Atualizar os dados do usuário no banco de dados (incluindo o campo periodo e over)
     $sql = "UPDATE user_ativo 
-            SET nome='$nome', status='$status', metas='$metas', credor='$credor', dt_entrada='$dt_entrada', periodo='$periodo'
+            SET nome='$nome', status='$status', metas='$metas', credor='$credor', `over`='$over', dt_entrada='$dt_entrada', periodo='$periodo'
             WHERE id='$id'";
     
     // Executar a consulta de atualização

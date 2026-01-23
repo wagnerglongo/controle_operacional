@@ -17,7 +17,11 @@ if ($result->num_rows > 0) {
             'id' => $row['id'],
             'nome' => $row['nome'],
             'status' => $row['status'],
-            'metas' => $row['metas']
+            'metas' => $row['metas'],
+            'credor' => $row['credor'],
+            'over' => $row['over'],
+            'dt_entrada' => isset($row['dt_entrada']) ? $row['dt_entrada'] : null,
+            'periodo' => isset($row['periodo']) ? $row['periodo'] : null
         ];
     }
 }

@@ -9,8 +9,9 @@ if ($conn->connect_error) {
 $id = $_POST['id'];
 
 // Movendo o usuário da tabela user_ativo para user_inativo
-$sql_inactivate = "INSERT INTO user_inativo (id, nome, status, metas, credor, `over`, data_cadastro) 
-                   SELECT id, nome, status, metas, credor, `over`, data_cadastro FROM user_ativo WHERE id = $id";
+// Adicionado dt_entrada e periodo
+$sql_inactivate = "INSERT INTO user_inativo (id, nome, status, metas, credor, `over`, data_cadastro, dt_entrada, periodo)
+                   SELECT id, nome, status, metas, credor, `over`, data_cadastro, dt_entrada, periodo FROM user_ativo WHERE id = $id";
 
 if ($conn->query($sql_inactivate) === TRUE) {
     // Após mover, deletar da tabela user_ativo
@@ -18,10 +19,11 @@ if ($conn->query($sql_inactivate) === TRUE) {
     if ($conn->query($sql_delete) === TRUE) {
         echo json_encode(['success' => true]);
     } else {
-        echo json_encode(['success' => false, 'error' => $conn->error]);
+        // Se falhar ao deletar, pode ser prudente desfazer a inserção no inativo, mas por enquanto vamos apenas reportar erro
+        echo json_encode(['success' => false, 'error' => "Erro ao remover de ativos: " . $conn->error]);
     }
 } else {
-    echo json_encode(['success' => false, 'error' => $conn->error]);
+    echo json_encode(['success' => false, 'error' => "Erro ao mover para inativos: " . $conn->error]);
 }
 
 $conn->close();

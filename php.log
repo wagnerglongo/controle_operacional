@@ -1,0 +1,71 @@
+[Fri Jan 23 17:21:58 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Fri Jan 23 17:22:53 2026] [::1]:59740 Accepted
+[Fri Jan 23 17:22:53 2026] PHP Fatal error:  Uncaught Error: Call to undefined function sqlsrv_connect() in /app/index.php:17
+Stack trace:
+#0 {main}
+  thrown in /app/index.php on line 17
+[Fri Jan 23 17:22:53 2026] [::1]:59740 [500]: GET / - Uncaught Error: Call to undefined function sqlsrv_connect() in /app/index.php:17
+Stack trace:
+#0 {main}
+  thrown in /app/index.php on line 17
+[Fri Jan 23 17:22:53 2026] [::1]:59740 Closing
+[Fri Jan 23 17:23:38 2026] [::1]:42668 Accepted
+[Fri Jan 23 17:23:38 2026] [::1]:42668 [200]: GET /
+[Fri Jan 23 17:23:38 2026] [::1]:42668 Closing
+[Fri Jan 23 17:23:38 2026] [::1]:42682 Accepted
+[Fri Jan 23 17:23:38 2026] [::1]:42682 [200]: GET /js/script.js
+[Fri Jan 23 17:23:38 2026] [::1]:42682 Closing
+[Fri Jan 23 17:23:38 2026] [::1]:42688 Accepted
+[Fri Jan 23 17:23:38 2026] PHP Fatal error:  Uncaught mysqli_sql_exception: No such file or directory in /app/php/load_users.php:3
+Stack trace:
+#0 /app/php/load_users.php(3): mysqli->__construct()
+#1 {main}
+  thrown in /app/php/load_users.php on line 3
+[Fri Jan 23 17:23:38 2026] [::1]:42688 [500]: GET /php/load_users.php - Uncaught mysqli_sql_exception: No such file or directory in /app/php/load_users.php:3
+Stack trace:
+#0 /app/php/load_users.php(3): mysqli->__construct()
+#1 {main}
+  thrown in /app/php/load_users.php on line 3
+[Fri Jan 23 17:23:38 2026] [::1]:42688 Closing
+[Fri Jan 23 17:23:39 2026] [::1]:42690 Accepted
+[Fri Jan 23 17:23:39 2026] PHP Fatal error:  Uncaught mysqli_sql_exception: No such file or directory in /app/php/load_inactive_users.php:3
+Stack trace:
+#0 /app/php/load_inactive_users.php(3): mysqli->__construct()
+#1 {main}
+  thrown in /app/php/load_inactive_users.php on line 3
+[Fri Jan 23 17:23:39 2026] [::1]:42690 [500]: GET /php/load_inactive_users.php - Uncaught mysqli_sql_exception: No such file or directory in /app/php/load_inactive_users.php:3
+Stack trace:
+#0 /app/php/load_inactive_users.php(3): mysqli->__construct()
+#1 {main}
+  thrown in /app/php/load_inactive_users.php on line 3
+[Fri Jan 23 17:23:39 2026] [::1]:42690 Closing
+[Fri Jan 23 17:24:01 2026] [::1]:34646 Accepted
+[Fri Jan 23 17:24:01 2026] [::1]:34646 [200]: GET /
+[Fri Jan 23 17:24:01 2026] [::1]:34646 Closing
+[Fri Jan 23 17:24:01 2026] [::1]:34656 Accepted
+[Fri Jan 23 17:24:01 2026] [::1]:34656 [200]: GET /js/script.js
+[Fri Jan 23 17:24:01 2026] [::1]:34656 Closing
+[Fri Jan 23 17:24:02 2026] [::1]:34664 Accepted
+[Fri Jan 23 17:24:02 2026] PHP Fatal error:  Uncaught mysqli_sql_exception: No such file or directory in /app/php/load_users.php:3
+Stack trace:
+#0 /app/php/load_users.php(3): mysqli->__construct()
+#1 {main}
+  thrown in /app/php/load_users.php on line 3
+[Fri Jan 23 17:24:02 2026] [::1]:34664 [500]: GET /php/load_users.php - Uncaught mysqli_sql_exception: No such file or directory in /app/php/load_users.php:3
+Stack trace:
+#0 /app/php/load_users.php(3): mysqli->__construct()
+#1 {main}
+  thrown in /app/php/load_users.php on line 3
+[Fri Jan 23 17:24:02 2026] [::1]:34664 Closing
+[Fri Jan 23 17:24:02 2026] [::1]:34680 Accepted
+[Fri Jan 23 17:24:02 2026] PHP Fatal error:  Uncaught mysqli_sql_exception: No such file or directory in /app/php/load_inactive_users.php:3
+Stack trace:
+#0 /app/php/load_inactive_users.php(3): mysqli->__construct()
+#1 {main}
+  thrown in /app/php/load_inactive_users.php on line 3
+[Fri Jan 23 17:24:02 2026] [::1]:34680 [500]: GET /php/load_inactive_users.php - Uncaught mysqli_sql_exception: No such file or directory in /app/php/load_inactive_users.php:3
+Stack trace:
+#0 /app/php/load_inactive_users.php(3): mysqli->__construct()
+#1 {main}
+  thrown in /app/php/load_inactive_users.php on line 3
+[Fri Jan 23 17:24:02 2026] [::1]:34680 Closing
