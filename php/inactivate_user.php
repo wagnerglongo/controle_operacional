@@ -10,8 +10,8 @@ $id = $_POST['id'];
 
 // Movendo o usuário da tabela user_ativo para user_inativo
 // Adicionado dt_entrada e periodo
-$sql_inactivate = "INSERT INTO user_inativo (id, nome, status, metas, credor, `over`, data_cadastro, dt_entrada, periodo)
-                   SELECT id, nome, status, metas, credor, `over`, data_cadastro, dt_entrada, periodo FROM user_ativo WHERE id = $id";
+$sql_inactivate = "INSERT INTO user_inativo (id, nome, status, metas, credor, `over`, data_cadastro)
+                   SELECT id, nome, status, metas, credor, `over`, data_cadastro FROM user_ativo WHERE id = $id";
 
 if ($conn->query($sql_inactivate) === TRUE) {
     // Após mover, deletar da tabela user_ativo
