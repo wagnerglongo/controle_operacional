@@ -1,4 +1,8 @@
 <?php
+// Ativar a exibição de erros para depuração
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 // Conexão com o banco de dados
 $conn = new mysqli("localhost", "quality", "quality@24", "controle_operacional");
 
