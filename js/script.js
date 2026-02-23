@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
-    loadUsers();
+    // Carrega credores e depois usuários
+    loadCredores().then(() => loadUsers());
     
     // Inicializa Select2 para o campo de nome, se existir
     if ($('#nome').length > 0) {
@@ -37,6 +38,39 @@ document.addEventListener("DOMContentLoaded", function() {
         viewInactives();  // Chama a função para carregar os inativos
     });
 
+    // Submissão do novo credor
+    const addCredorForm = document.getElementById("add-credor-form");
+    if (addCredorForm) {
+        addCredorForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const nome = document.getElementById('new-credor-nome').value;
+            const credorId = document.getElementById('new-credor-id').value;
+            const overId = document.getElementById('new-credor-over').value || 0;
+
+            fetch('php/api_credores.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nome: nome,
+                    credor_id: credorId,
+                    over_id: overId
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    alert('Credor adicionado com sucesso!');
+                    this.reset();
+                    loadCredores().then(() => loadUsers());
+                } else {
+                    alert('Erro ao adicionar credor: ' + (data.error || 'Erro desconhecido'));
+                }
+            })
+            .catch(err => alert('Erro de conexão ao adicionar credor.'));
+        });
+    }
+
     // Submissão do formulário de cadastro
     document.getElementById("register-form").addEventListener("submit", function(e) {
         e.preventDefault();
@@ -58,7 +92,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 this.reset();
                 // Resetar Select2
                 $('#nome').val(null).trigger('change');
-                $('#credor').val('6').trigger('change');
+                // Reseta credor para o primeiro valor ou vazio
+                $('#credor').val('').trigger('change');
 
                 loadUsers();  // Recarregar lista de usuários
             } else {
@@ -123,21 +158,95 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+// Função para carregar Credores e gerar a estrutura HTML
+function loadCredores() {
+    return fetch('php/api_credores.php')
+        .then(res => res.json())
+        .then(credores => {
+            // 1. Popula containers na página principal
+            const mainContainer = document.getElementById('credores-container');
+            mainContainer.innerHTML = '';
+
+            // 2. Popula selects (Cadastro e Edição)
+            const selectRegister = document.getElementById('credor');
+            const selectEdit = document.getElementById('edit-credor');
+            selectRegister.innerHTML = '<option value="">Selecione...</option>';
+            selectEdit.innerHTML = '<option value="">Selecione...</option>';
+
+            // 3. Popula tabela no modal de gerenciamento
+            const tableBody = document.getElementById('credores-list-table');
+            if (tableBody) tableBody.innerHTML = '';
+
+            if (credores.length === 0) {
+                mainContainer.innerHTML = '<div class="col-12 text-center text-muted">Nenhum credor cadastrado.</div>';
+            }
+
+            credores.forEach(c => {
+                // HTML Card
+                const col = document.createElement('div');
+                col.className = 'col-xl-3 col-lg-3 col-md-6 col-12 mb-3';
+                col.innerHTML = `
+                    <section class="card h-100" id="${c.container_id}" aria-labelledby="heading-${c.slug}">
+                        <div class="card-header">
+                            <h3 class="card-title" id="heading-${c.slug}">${c.nome}</h3>
+                        </div>
+                        <div class="list-group list-group-flush" id="user-list-${c.container_id}">
+                            <!-- Lista de usuários deste credor -->
+                        </div>
+                    </section>
+                `;
+                mainContainer.appendChild(col);
+
+                // Select Option
+                // Lógica de valor: se over > 0, formato "credor-over". Se não, apenas "credor".
+                let val = c.credor_id;
+                if(c.over_id > 0) val += '-' + c.over_id;
+
+                const optionHtml = `<option value="${val}">${c.nome}</option>`;
+                selectRegister.insertAdjacentHTML('beforeend', optionHtml);
+                selectEdit.insertAdjacentHTML('beforeend', optionHtml);
+
+                // Table Row (se modal existir)
+                if (tableBody) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${c.nome}</td>
+                        <td>${c.credor_id}</td>
+                        <td>${c.over_id}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-danger btn-delete-credor" data-id="${c.id}">Excluir</button>
+                        </td>
+                    `;
+                    tr.querySelector('.btn-delete-credor').addEventListener('click', () => deleteCredor(c.id));
+                    tableBody.appendChild(tr);
+                }
+            });
+        })
+        .catch(err => {
+            console.error('Erro ao carregar credores:', err);
+            document.getElementById('credores-container').innerHTML = '<div class="alert alert-danger">Erro ao carregar credores.</div>';
+        });
+}
+
+function deleteCredor(id) {
+    if(confirm('Tem certeza que deseja excluir este credor?')) {
+        fetch('php/api_credores.php?id=' + id, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    loadCredores().then(() => loadUsers());
+                } else {
+                    alert('Erro ao excluir: ' + data.error);
+                }
+            })
+            .catch(err => alert('Erro de conexão.'));
+    }
+}
+
 // Função para carregar os usuários ativos na página
 function loadUsers() {
-    // Limpa os containers existentes
-    const containers = [
-        "user-list-ativo-credor-5",
-        "user-list-crefisa-credor-2-over-2",
-        "user-list-pagbank-credor-1",
-        "user-list-amc-credor-6"
-        // Adicione outros containers se existirem no HTML
-    ];
-
-    containers.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = '';
-    });
+    // Limpa as listas de usuários dentro dos cards
+    document.querySelectorAll('[id^="user-list-"]').forEach(el => el.innerHTML = '');
 
     fetch('php/load_users.php')
         .then(response => response.json())
@@ -149,13 +258,16 @@ function loadUsers() {
             }
 
             data.forEach(user => {
-                const container = document.getElementById(`user-list-${user.container}`);
+                const containerId = `user-list-${user.container}`;
+                const container = document.getElementById(containerId);
+
                 if (container) {
-                    const userItem = document.createElement('div'); // Mudado para div para melhor controle dentro do list-group
+                    const userItem = document.createElement('div');
                     userItem.classList.add('list-group-item', 'list-group-item-action');
 
                     // Formata data se existir
-                    const dataEntrada = user.dt_entrada ? new Date(user.dt_entrada).toLocaleDateString('pt-BR') : 'N/D';
+                    const dataEntrada = user.dt_entrada ? new Date(user.dt_entrada).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'N/D';
+                    // Nota: Date parsing pode variar com timezone. Usando UTC para evitar shifts se a data for YYYY-MM-DD apenas.
 
                     userItem.innerHTML = `
                         <div class="d-flex w-100 justify-content-between align-items-center">
@@ -184,13 +296,16 @@ function loadUsers() {
                     });
 
                     container.appendChild(userItem);
+                } else {
+                     // Container não encontrado (talvez o credor tenha sido removido mas ainda há usuários vinculados)
+                     // Poderíamos adicionar a um container "Outros"
+                     console.warn(`Container ${containerId} não encontrado para usuário ${user.nome}`);
                 }
             });
 
-            // Se a lista estiver vazia, adicione uma mensagem
-            containers.forEach(id => {
-                const el = document.getElementById(id);
-                if (el && el.children.length === 0) {
+            // Se a lista estiver vazia em algum card, adicione uma mensagem
+            document.querySelectorAll('[id^="user-list-"]').forEach(el => {
+                if (el.children.length === 0) {
                     el.innerHTML = '<div class="list-group-item text-center text-muted">Nenhum usuário encontrado</div>';
                 }
             });
@@ -217,6 +332,8 @@ function editUser(id, nome, status, metas, dt_entrada, credor, over, periodo) {
         credorValue = `${credor}-${over}`;
     }
 
+    // Verifica se a opção existe. Se não existir (credor antigo deletado?), talvez adicione temporariamente?
+    // O Select2 limpará se o valor não existir.
     $('#edit-credor').val(credorValue).trigger('change');
 
     const editModal = new bootstrap.Modal(document.getElementById('edit-form-container'));
@@ -332,22 +449,10 @@ function reactivateUser(id) {
         .then(data => {
             if (data.success) {
                 alert('Usuário reativado com sucesso');
-                // Recarrega a lista de inativos (para remover o item)
-                // Precisamos chamar viewInactives novamente? Não, apenas atualizar a lista.
-                // Mas viewInactives abre o modal. Então melhor apenas atualizar a lista se o modal estiver aberto.
-                // Como simplificação, recarregamos a lista de inativos e ativos.
                 loadUsers();
 
-                // Hack para atualizar a lista do modal sem fechá-lo ou reabri-lo
-                // Mas como viewInactives abre o modal, se chamarmos ela de novo vai tentar abrir de novo.
-                // Vamos simular um clique no botão de ver inativos, ou refazer a logica de fetch.
-                // O mais simples:
                 const inactiveModalEl = document.getElementById("inactive-users-container");
                 if (inactiveModalEl.classList.contains('show')) {
-                     // Recarrega conteudo do modal
-                     const listContainer = document.getElementById("inactive-user-list");
-                     // ... fetch ... mas DRY.
-                     // Vamos fechar o modal por enquanto para simplificar
                      const modal = bootstrap.Modal.getInstance(inactiveModalEl);
                      modal.hide();
                 }

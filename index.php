@@ -14,7 +14,12 @@ $connectionOptions = array(
     "TrustServerCertificate" => true
 );
 
-$conn = sqlsrv_connect($serverName, $connectionOptions);
+if (function_exists('sqlsrv_connect')) {
+    $conn = sqlsrv_connect($serverName, $connectionOptions);
+} else {
+    $conn = false;
+    // $error = "Extensão sqlsrv não disponível."; // Opcional: definir erro ou apenas falhar silenciosamente
+}
 
 if (!$conn) {
     // Fallback ou mensagem de erro amigável se a conexão falhar, mas mantendo a estrutura da página
@@ -81,6 +86,7 @@ if ($conn) {
             </button>
             <h1 class="text-center flex-grow-1 m-0 fs-3">Gestão de Usuários</h1>
             <div class="d-flex gap-2">
+                <button class="btn btn-warning text-white" data-bs-toggle="modal" data-bs-target="#manageCredoresModal">Gerenciar Credores</button>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registerUserModal">Cadastrar Novo Usuário</button>
                 <button id="view-inactives" class="btn btn-info text-white">Ver Inativos</button>
             </div>
@@ -94,47 +100,13 @@ if ($conn) {
         <?php endif; ?>
 
         <!-- Containers de Credores organizados em cards -->
-        <main class="row mb-4">
-            <div class="col-xl-3 col-lg-3 col-md-6 col-12 mb-3">
-                <section class="card h-100" id="ativo-credor-5" aria-labelledby="heading-ativos">
-                    <div class="card-header">
-                        <h3 class="card-title" id="heading-ativos">Ativos</h3>
-                    </div>
-                    <div class="list-group list-group-flush" id="user-list-ativo-credor-5">
-                        <!-- Lista de usuários ativos -->
-                    </div>
-                </section>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-6 col-12 mb-3">
-                <section class="card h-100" id="crefisa-credor-2-over-2" aria-labelledby="heading-crefisa">
-                    <div class="card-header">
-                        <h3 class="card-title" id="heading-crefisa">Crefisa</h3>
-                    </div>
-                    <div class="list-group list-group-flush" id="user-list-crefisa-credor-2-over-2">
-                        <!-- Lista de usuários Crefisa -->
-                    </div>
-                </section>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-6 col-12 mb-3">
-                <section class="card h-100" id="pagbank-credor-1" aria-labelledby="heading-pagbank">
-                    <div class="card-header">
-                        <h3 class="card-title" id="heading-pagbank">PagBank</h3>
-                    </div>
-                    <div class="list-group list-group-flush" id="user-list-pagbank-credor-1">
-                        <!-- Lista de usuários PagBank -->
-                    </div>
-                </section>
-            </div>
-            <div class="col-xl-3 col-lg-3 col-md-6 col-12 mb-3">
-                <section class="card h-100" id="amc-credor-6" aria-labelledby="heading-amc">
-                    <div class="card-header">
-                        <h3 class="card-title" id="heading-amc">AMC</h3>
-                    </div>
-                    <div class="list-group list-group-flush" id="user-list-amc-credor-6">
-                        <!-- Lista de usuários amc -->
-                    </div>
-                </section>
-            </div>
+        <main class="row mb-4" id="credores-container">
+            <!-- Os cards dos credores serão gerados dinamicamente via JS -->
+             <div class="col-12 text-center">
+                 <div class="spinner-border text-primary" role="status">
+                     <span class="visually-hidden">Carregando credores...</span>
+                 </div>
+             </div>
         </main>
     </div>
 
@@ -159,11 +131,7 @@ if ($conn) {
                             <div class="col-md-6 mb-3">
                                 <label for="credor" class="form-label">Credor:</label>
                                 <select id="credor" name="credor" class="form-select w-100" required>
-                                    <option value="6">Amc</option>
-                                    <option value="5">Ativos</option>
-                                    <option value="2-2">Crefisa</option>
-                                    <option value="2-1">Over</option>
-                                    <option value="1">PagBank</option>
+                                    <option value="">Carregando...</option>
                                 </select>
                             </div>
                         </div>
@@ -223,11 +191,7 @@ if ($conn) {
                         <div class="col-md-6 mb-3">
                             <label for="edit-credor" class="form-label">Credor:</label>
                             <select id="edit-credor" name="credor" class="form-select w-100" required>
-                                <option value="6">Amc</option>
-                                <option value="5">Ativos</option>
-                                <option value="2-2">Crefisa</option>
-                                <option value="2-1">Over</option>
-                                <option value="1">PagBank</option>
+                                <option value="">Carregando...</option>
                             </select>
                         </div>
                     </div>
@@ -268,6 +232,60 @@ if ($conn) {
             </div>
          </div>
       </div>
+    </div>
+
+    <!-- Modal para Gerenciar Credores -->
+    <div class="modal fade" id="manageCredoresModal" tabindex="-1" aria-labelledby="manageCredoresModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="manageCredoresModalLabel">Gerenciar Credores</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4 p-3 bg-light rounded border">
+                        <h6 class="mb-3">Adicionar Novo Credor</h6>
+                        <form id="add-credor-form" class="row g-2 align-items-end">
+                            <div class="col-md-5">
+                                <label for="new-credor-nome" class="form-label small">Nome</label>
+                                <input type="text" class="form-control" id="new-credor-nome" placeholder="Ex: Supervisor" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="new-credor-id" class="form-label small">ID Credor</label>
+                                <input type="number" class="form-control" id="new-credor-id" placeholder="Ex: 7" required>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="new-credor-over" class="form-label small">ID Over</label>
+                                <input type="number" class="form-control" id="new-credor-over" placeholder="0" value="0">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">Adicionar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <h6 class="mb-2">Credores Cadastrados</h6>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>ID Credor</th>
+                                    <th>ID Over</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="credores-list-table">
+                                <!-- Lista de credores preenchida via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal para exibir usuários inativos -->
