@@ -8,6 +8,28 @@ if ($conn->connect_error) {
     die(json_encode(['success' => false, 'error' => "Falha na conexão: " . $conn->connect_error]));
 }
 
+// Verifica e cria a tabela se não existir (Auto-Migration)
+$checkTable = $conn->query("SHOW TABLES LIKE 'managed_credores'");
+if ($checkTable->num_rows == 0) {
+    $sql_create = "CREATE TABLE IF NOT EXISTS managed_credores (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(255) NOT NULL,
+        credor_id INT NOT NULL,
+        over_id INT DEFAULT 0,
+        slug VARCHAR(255) NOT NULL
+    )";
+    if ($conn->query($sql_create) === TRUE) {
+        // Popula com dados iniciais
+        $sql_insert = "INSERT INTO managed_credores (nome, credor_id, over_id, slug) VALUES
+            ('Ativos', 5, 0, 'ativo'),
+            ('Crefisa', 2, 2, 'crefisa'),
+            ('Over', 2, 1, 'over'),
+            ('PagBank', 1, 0, 'pagbank'),
+            ('AMC', 6, 0, 'amc')";
+        $conn->query($sql_insert);
+    }
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Input JSON para PUT/DELETE e POST (se enviado como JSON)

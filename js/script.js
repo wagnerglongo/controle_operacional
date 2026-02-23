@@ -161,7 +161,12 @@ document.addEventListener("DOMContentLoaded", function() {
 // Função para carregar Credores e gerar a estrutura HTML
 function loadCredores() {
     return fetch('php/api_credores.php')
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(text => { throw new Error(text) });
+            }
+            return res.json();
+        })
         .then(credores => {
             // 1. Popula containers na página principal
             const mainContainer = document.getElementById('credores-container');
@@ -224,7 +229,8 @@ function loadCredores() {
         })
         .catch(err => {
             console.error('Erro ao carregar credores:', err);
-            document.getElementById('credores-container').innerHTML = '<div class="alert alert-danger">Erro ao carregar credores.</div>';
+            const msg = err.message.substring(0, 100);
+            document.getElementById('credores-container').innerHTML = `<div class="alert alert-danger">Erro ao carregar credores: ${msg}</div>`;
         });
 }
 
