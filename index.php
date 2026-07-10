@@ -51,6 +51,8 @@ if ($conn) {
     <link rel="icon" href="img/icon-head.png" type="image/png">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Select2 Bootstrap 5 Theme -->
@@ -98,6 +100,40 @@ if ($conn) {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <?php endif; ?>
+
+        <!-- Painel de Filtros e Pesquisa -->
+        <div class="card p-3 mb-4 shadow-sm border-0 bg-white">
+            <div class="row g-3 align-items-center">
+                <div class="col-12 col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="search-input" class="form-control border-start-0 bg-light" placeholder="Buscar operador por nome...">
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <select id="filter-status" class="form-select bg-light">
+                        <option value="">Nível: Todos</option>
+                        <option value="estagio">Estágio</option>
+                        <option value="junior">Júnior</option>
+                        <option value="senior">Sênior</option>
+                    </select>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <select id="filter-periodo" class="form-select bg-light">
+                        <option value="">Período: Todos</option>
+                        <option value="manha">Manhã</option>
+                        <option value="tarde">Tarde</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-2 text-md-end text-center">
+                    <button id="clear-filters" class="btn btn-outline-secondary w-100" style="display: none;">
+                        <i class="bi bi-x-circle me-1"></i> Limpar
+                    </button>
+                </div>
+            </div>
+        </div>
 
         <!-- Containers de Credores organizados em cards -->
         <main class="row mb-4" id="credores-container">

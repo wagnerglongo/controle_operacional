@@ -156,6 +156,24 @@ document.addEventListener("DOMContentLoaded", function() {
             alert('Erro de conexão ao atualizar usuário.');
         });
     });
+
+    // Registra listeners de busca e filtros instantâneos
+    const searchInput = document.getElementById('search-input');
+    const filterStatus = document.getElementById('filter-status');
+    const filterPeriodo = document.getElementById('filter-periodo');
+    const clearFiltersBtn = document.getElementById('clear-filters');
+
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+    if (filterStatus) filterStatus.addEventListener('change', applyFilters);
+    if (filterPeriodo) filterPeriodo.addEventListener('change', applyFilters);
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', function() {
+            if (searchInput) searchInput.value = '';
+            if (filterStatus) filterStatus.value = '';
+            if (filterPeriodo) filterPeriodo.value = '';
+            applyFilters();
+        });
+    }
 });
 
 // Função para carregar Credores e gerar a estrutura HTML
@@ -183,19 +201,22 @@ function loadCredores() {
             if (tableBody) tableBody.innerHTML = '';
 
             if (credores.length === 0) {
-                mainContainer.innerHTML = '<div class="col-12 text-center text-muted">Nenhum credor cadastrado.</div>';
+                mainContainer.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-folder-x fs-1 d-block mb-2"></i>Nenhum credor cadastrado.</div>';
             }
 
             credores.forEach(c => {
                 // HTML Card
                 const col = document.createElement('div');
-                col.className = 'col-xl-3 col-lg-3 col-md-6 col-12 mb-3';
+                col.className = 'col-12 col-md-6 col-lg-4 col-xxl-3 mb-4';
                 col.innerHTML = `
-                    <section class="card h-100" id="${c.container_id}" aria-labelledby="heading-${c.slug}">
-                        <div class="card-header">
-                            <h3 class="card-title" id="heading-${c.slug}">${c.nome}</h3>
+                    <section class="card h-100 border-0 shadow-sm credor-card" id="${c.container_id}" aria-labelledby="heading-${c.slug}">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h3 class="card-title fw-bold text-dark m-0 fs-5" id="heading-${c.slug}">
+                                <i class="bi bi-briefcase text-primary me-2"></i>${c.nome}
+                            </h3>
+                            <span class="badge rounded-pill bg-primary user-count-badge" id="count-${c.container_id}">0</span>
                         </div>
-                        <div class="list-group list-group-flush" id="user-list-${c.container_id}">
+                        <div class="list-group list-group-flush border-top-0 credor-user-list" id="user-list-${c.container_id}">
                             <!-- Lista de usuários deste credor -->
                         </div>
                     </section>
@@ -215,11 +236,11 @@ function loadCredores() {
                 if (tableBody) {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${c.nome}</td>
-                        <td>${c.credor_id}</td>
-                        <td>${c.over_id}</td>
+                        <td><strong>${c.nome}</strong></td>
+                        <td><code class="text-secondary">${c.credor_id}</code></td>
+                        <td><code class="text-secondary">${c.over_id}</code></td>
                         <td class="text-end">
-                            <button class="btn btn-sm btn-danger btn-delete-credor" data-id="${c.id}">Excluir</button>
+                            <button class="btn btn-sm btn-danger btn-delete-credor" data-id="${c.id}"><i class="bi bi-trash-fill"></i> Excluir</button>
                         </td>
                     `;
                     tr.querySelector('.btn-delete-credor').addEventListener('click', () => deleteCredor(c.id));
@@ -269,25 +290,60 @@ function loadUsers() {
 
                 if (container) {
                     const userItem = document.createElement('div');
-                    userItem.classList.add('list-group-item', 'list-group-item-action');
+                    userItem.classList.add('list-group-item', 'list-group-item-action', 'p-3');
+
+                    // Set dynamic datasets for live filtering
+                    userItem.dataset.nome = user.nome || '';
+                    userItem.dataset.status = user.status || '';
+                    userItem.dataset.periodo = user.periodo || '';
 
                     // Formata data se existir
                     const dataEntrada = user.dt_entrada ? new Date(user.dt_entrada).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 'N/D';
-                    // Nota: Date parsing pode variar com timezone. Usando UTC para evitar shifts se a data for YYYY-MM-DD apenas.
+
+                    // Contextual status badge formatting
+                    let statusBadge = '';
+                    const statusVal = user.status ? user.status.toLowerCase() : '';
+                    if (statusVal === 'estagio') {
+                        statusBadge = '<span class="badge badge-estagio">Estágio</span>';
+                    } else if (statusVal === 'junior') {
+                        statusBadge = '<span class="badge badge-junior">Júnior</span>';
+                    } else if (statusVal === 'senior') {
+                        statusBadge = '<span class="badge badge-senior">Sênior</span>';
+                    } else {
+                        statusBadge = `<span class="badge bg-secondary text-capitalize">${user.status || ''}</span>`;
+                    }
+
+                    // Contextual period badge formatting
+                    let periodoBadge = '';
+                    const periodoVal = user.periodo ? user.periodo.toLowerCase() : '';
+                    if (periodoVal === 'manha') {
+                        periodoBadge = '<span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="bi bi-sun-fill me-1"></i>Manhã</span>';
+                    } else if (periodoVal === 'tarde') {
+                        periodoBadge = '<span class="badge bg-dark-subtle text-dark border border-dark-subtle"><i class="bi bi-moon-stars-fill me-1"></i>Tarde</span>';
+                    } else {
+                        periodoBadge = '<span class="badge bg-light text-muted border">Não def.</span>';
+                    }
 
                     userItem.innerHTML = `
                         <div class="d-flex w-100 justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mb-1">${user.nome}</h5>
-                                <p class="mb-1">
-                                    <span class="badge bg-secondary">${user.status}</span>
-                                    <span class="badge bg-info text-dark">${user.periodo || 'Não def.'}</span>
-                                </p>
-                                <small class="text-muted">Meta: ${user.metas} | Entrada: ${dataEntrada}</small>
+                            <div class="pe-2 text-truncate" style="flex: 1;">
+                                <div class="fw-bold text-dark text-truncate mb-1" style="font-size: 0.95rem;" title="${user.nome}">${user.nome}</div>
+                                <div class="mb-1 d-flex gap-1 flex-wrap">
+                                    ${statusBadge}
+                                    ${periodoBadge}
+                                </div>
+                                <div class="text-muted d-flex flex-wrap gap-2" style="font-size: 0.72rem;">
+                                    <span><i class="bi bi-graph-up me-1"></i>Meta: <strong>${user.metas}</strong></span>
+                                    <span><i class="bi bi-calendar-event me-1"></i>Entrada: <strong>${dataEntrada}</strong></span>
+                                </div>
                             </div>
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-outline-primary btn-sm btn-edit" data-id="${user.id}">Editar</button>
-                                <button class="btn btn-outline-danger btn-sm btn-inactivate" data-id="${user.id}">Inativar</button>
+                            <div class="d-flex gap-1 flex-shrink-0">
+                                <button class="btn btn-light btn-sm text-primary btn-edit p-1 px-2 border shadow-sm" data-id="${user.id}" title="Editar">
+                                    <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
+                                </button>
+                                <button class="btn btn-light btn-sm text-danger btn-inactivate p-1 px-2 border shadow-sm" data-id="${user.id}" title="Inativar">
+                                    <i class="bi bi-person-x-fill" style="font-size: 0.85rem;"></i>
+                                </button>
                             </div>
                         </div>
                     `;
@@ -303,22 +359,88 @@ function loadUsers() {
 
                     container.appendChild(userItem);
                 } else {
-                     // Container não encontrado (talvez o credor tenha sido removido mas ainda há usuários vinculados)
-                     // Poderíamos adicionar a um container "Outros"
                      console.warn(`Container ${containerId} não encontrado para usuário ${user.nome}`);
                 }
             });
 
-            // Se a lista estiver vazia em algum card, adicione uma mensagem
-            document.querySelectorAll('[id^="user-list-"]').forEach(el => {
-                if (el.children.length === 0) {
-                    el.innerHTML = '<div class="list-group-item text-center text-muted">Nenhum usuário encontrado</div>';
-                }
-            });
+            // Aplica os filtros ativos para sincronizar o estado e criar mensagens de vazio corretas
+            applyFilters();
         })
         .catch(error => {
             console.error('Erro ao carregar usuários:', error);
         });
+}
+
+// Função para aplicar busca e filtros em tempo real
+function applyFilters() {
+    const searchInput = document.getElementById('search-input');
+    const filterStatus = document.getElementById('filter-status');
+    const filterPeriodo = document.getElementById('filter-periodo');
+    const clearFiltersBtn = document.getElementById('clear-filters');
+
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const statusFilter = filterStatus ? filterStatus.value : '';
+    const periodoFilter = filterPeriodo ? filterPeriodo.value : '';
+
+    // Mostra/oculta botão de limpar filtros
+    const hasActiveFilters = query || statusFilter || periodoFilter;
+    if (clearFiltersBtn) {
+        clearFiltersBtn.style.display = hasActiveFilters ? 'inline-block' : 'none';
+    }
+
+    // Filtra usuários em cada credor
+    document.querySelectorAll('[id^="user-list-"]').forEach(listEl => {
+        const containerId = listEl.id.replace('user-list-', '');
+        let visibleCount = 0;
+        let totalCount = 0;
+
+        // Limpa mensagens vazias anteriores se existirem antes de avaliar
+        const existingEmptyMsg = listEl.querySelector('.empty-state-item');
+        if (existingEmptyMsg) {
+            existingEmptyMsg.remove();
+        }
+
+        const items = listEl.querySelectorAll('.list-group-item:not(.empty-state-item)');
+        items.forEach(item => {
+            const nome = item.dataset.nome ? item.dataset.nome.toLowerCase() : '';
+            const status = item.dataset.status ? item.dataset.status.toLowerCase() : '';
+            const periodo = item.dataset.periodo ? item.dataset.periodo.toLowerCase() : '';
+
+            const matchesQuery = !query || nome.includes(query);
+            const matchesStatus = !statusFilter || status === statusFilter.toLowerCase();
+            const matchesPeriodo = !periodoFilter || periodo === periodoFilter.toLowerCase();
+
+            if (matchesQuery && matchesStatus && matchesPeriodo) {
+                item.style.setProperty('display', 'block', 'important');
+                visibleCount++;
+            } else {
+                item.style.setProperty('display', 'none', 'important');
+            }
+            totalCount++;
+        });
+
+        // Atualiza o contador de operadores ativos/visíveis no header do card
+        const countBadge = document.getElementById(`count-${containerId}`);
+        if (countBadge) {
+            countBadge.innerText = visibleCount;
+            if (visibleCount === 0) {
+                countBadge.className = 'badge rounded-pill bg-secondary user-count-badge';
+            } else {
+                countBadge.className = 'badge rounded-pill bg-primary user-count-badge';
+            }
+        }
+
+        // Se nenhum operador ficou visível nesta lista, exibe um estado vazio bonito
+        if (visibleCount === 0) {
+            const emptyMsg = document.createElement('div');
+            emptyMsg.className = 'list-group-item text-center text-muted py-4 empty-state-item';
+            emptyMsg.innerHTML = `
+                <i class="bi bi-people d-block fs-4 mb-1 text-muted"></i>
+                <span style="font-size: 0.85rem;">Nenhum operador</span>
+            `;
+            listEl.appendChild(emptyMsg);
+        }
+    });
 }
 
 // Função para editar um usuário
@@ -338,8 +460,7 @@ function editUser(id, nome, status, metas, dt_entrada, credor, over, periodo) {
         credorValue = `${credor}-${over}`;
     }
 
-    // Verifica se a opção existe. Se não existir (credor antigo deletado?), talvez adicione temporariamente?
-    // O Select2 limpará se o valor não existir.
+    // Define valor do credor no select
     $('#edit-credor').val(credorValue).trigger('change');
 
     const editModal = new bootstrap.Modal(document.getElementById('edit-form-container'));
@@ -402,25 +523,27 @@ function viewInactives() {
             listContainer.innerHTML = '';
 
             if (data.length === 0) {
-                listContainer.innerHTML = '<p class="text-center text-muted">Nenhum usuário inativo.</p>';
+                listContainer.innerHTML = '<p class="text-center text-muted py-3">Nenhum usuário inativo.</p>';
                 return;
             }
 
             // Criar uma lista com classes Bootstrap
             const ul = document.createElement('ul');
-            ul.classList.add('list-group');
+            ul.classList.add('list-group', 'list-group-flush');
 
             data.forEach(user => {
                 const li = document.createElement('li');
-                li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center', 'py-3');
 
                 li.innerHTML = `
                     <div>
-                        <span class="fw-bold">${user.nome}</span>
-                        <span class="badge bg-secondary ms-2">${user.status}</span>
-                        <div class="small text-muted">Metas: ${user.metas}</div>
+                        <span class="fw-bold text-dark d-block">${user.nome}</span>
+                        <div class="mt-1">
+                            <span class="badge bg-secondary text-capitalize small me-1">${user.status}</span>
+                            <span class="small text-muted">Metas: ${user.metas}</span>
+                        </div>
                     </div>
-                    <button class="btn btn-sm btn-success btn-reactivate" data-id="${user.id}">Reativar</button>
+                    <button class="btn btn-sm btn-success btn-reactivate px-3" data-id="${user.id}"><i class="bi bi-person-check-fill me-1"></i> Reativar</button>
                 `;
 
                 li.querySelector('.btn-reactivate').addEventListener('click', () => {
